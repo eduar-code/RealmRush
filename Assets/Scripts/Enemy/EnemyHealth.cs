@@ -27,6 +27,7 @@ public class EnemyHealth : MonoBehaviour
     void OnParticleCollision(GameObject other)
     {
         ProcessHit();
+        gameObject.GetComponent<AudioSource>().Play();
     }
 
     void ProcessHit()

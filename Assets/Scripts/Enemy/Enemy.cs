@@ -8,22 +8,29 @@ public class Enemy : MonoBehaviour
     [SerializeField] int goldPenalty = 25;
 
     Bank bank;
+    ManagerCanvas managerCanvas;
 
     void Start()
     {
         bank = FindObjectOfType<Bank>();
-        
+        managerCanvas = FindObjectOfType<ManagerCanvas>();
+
     }
 
     public void RewardGold()
     {
-        if(bank == null){ return; }
+        if (bank == null) { return; }
         bank.Deposit(goldReward);
     }
 
-     public void StealGold()
+    public void StealGold()
     {
-        if(bank == null){ return; }
+        if (bank == null) { return; }
         bank.Withdraw(goldPenalty);
+    }
+
+    public void EnemyEntered()
+    {
+        managerCanvas.EnemyWhoentered();
     }
 }

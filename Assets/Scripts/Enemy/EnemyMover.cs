@@ -52,6 +52,7 @@ public class EnemyMover : MonoBehaviour
 
     void FinishPath()
     {
+        enemy.EnemyEntered();
         enemy.StealGold();
         gameObject.SetActive(false);
     }
