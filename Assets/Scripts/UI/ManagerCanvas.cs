@@ -1,43 +1,99 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class ManagerCanvas : MonoBehaviour
 {
-
-    //[SerializeField] GameObject mainPanel;
     [SerializeField] GameObject gamePanel;
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject enemySpawn;
     [SerializeField] GameObject enviroment;
+    [SerializeField] GameObject objectGold;
+    [SerializeField] TextMeshProUGUI enemyTower;
+    [SerializeField] TextMeshProUGUI enemyHealth;
+    [SerializeField] TextMeshProUGUI timerText;
     [SerializeField] AudioSource soundGame;
+    [SerializeField] Animator enemyattack;
     [SerializeField] int enemyEntered = 3;
-    int countEnemy = 0;
-
-
-    // void Awake()
-    // {
-    //     enviroment.SetActive(false);
-    //     enemySpawn.SetActive(false);
-    // }
-
+    [SerializeField] float remainingTime;
+    int countEnemy;
+    int pre_enemyhealt;
 
     void Update()
     {
-
+        if (SceneManager.GetActiveScene().name != "MainScene")
+        {
+            SetTimer();
+        }
     }
 
-    public void StartGame()
+    public void SetTimer()
     {
-        StartCoroutine(PlayGame());
+        if (remainingTime > 0)
+        {
+            remainingTime -= Time.deltaTime;
+        }
+        else if (remainingTime < 0 && countEnemy < enemyEntered)
+        {
+            remainingTime = 0;
+            // nextLevel
+        }
+        
+        int minutes = Mathf.FloorToInt(remainingTime / 60);
+        int secods = Mathf.FloorToInt(remainingTime % 60);
+        timerText.text = " Time: " + string.Format("{0:00}:{1:00}", minutes, secods);
     }
 
-    public void ManuGame()
+    public void GameOver()
+    {
+        soundGame.Stop();
+        enviroment.SetActive(false);
+        gamePanel.SetActive(false);
+        gameOverPanel.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void EnemyWhoentered()
+    {
+        enemyTower.text = "Enemy in tower: " + ++countEnemy;
+        enemyattack.SetTrigger("attack");
+
+        if (countEnemy >= enemyEntered)
+        {
+            GameOver();
+        }
+    }
+
+    public void DisplayEnemyHealth(int val)
+    {
+        if (val > pre_enemyhealt)
+        {
+            enemyHealth.text = "Enemy Health: " + val.ToString();
+            pre_enemyhealt = val;
+        }
+    }
+
+    public void AddWithdrawGold(string val, int amount)
+    {
+        if (val == "--")
+        {
+            objectGold.GetComponent<TextMeshProUGUI>().color = Color.red;
+        }
+        else
+        {
+            objectGold.GetComponent<TextMeshProUGUI>().color = Color.yellow;
+        }
+        objectGold.GetComponent<Animator>().SetTrigger("addGold");
+        objectGold.GetComponent<TextMeshProUGUI>().text = val + " " + amount;
+    }
+
+    public void LoadSceneGame(string name)
     {
         Time.timeScale = 1;
-        StartCoroutine(Menu());
+        StartCoroutine(LoadGame(name));
     }
 
     public void RestartGame()
@@ -51,16 +107,10 @@ public class ManagerCanvas : MonoBehaviour
         StartCoroutine(QuitGame());
     }
 
-    IEnumerator PlayGame()
+    IEnumerator LoadGame(string name)
     {
         yield return new WaitForSeconds(0.2f);
-        SceneManager.LoadSceneAsync("Game");
-    }
-
-    IEnumerator Menu()
-    {
-        yield return new WaitForSeconds(0.2f);
-        SceneManager.LoadSceneAsync("MainScene");
+        SceneManager.LoadSceneAsync(name);
     }
 
     IEnumerator Restar()
@@ -76,16 +126,4 @@ public class ManagerCanvas : MonoBehaviour
         Application.Quit();
     }
 
-    public void EnemyWhoentered()
-    {
-        countEnemy++;
-        if (countEnemy == enemyEntered)
-        {
-            soundGame.Stop();
-            enviroment.SetActive(false);
-            gamePanel.SetActive(false);
-            gameOverPanel.SetActive(true);
-            Time.timeScale = 0;
-        }
-    }
 }

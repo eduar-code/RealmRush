@@ -13,6 +13,7 @@ public class EnemyHealth : MonoBehaviour
     int currentHitPoints = 0;
 
     Enemy enemy;
+    ManagerCanvas managerCanvas;
 
     void OnEnable()
     {
@@ -22,6 +23,7 @@ public class EnemyHealth : MonoBehaviour
     void Start()
     {
         enemy = GetComponent<Enemy>();
+        managerCanvas = FindObjectOfType<ManagerCanvas>();
     }
 
     void OnParticleCollision(GameObject other)
@@ -37,6 +39,7 @@ public class EnemyHealth : MonoBehaviour
         {
             enemy.RewardGold();
             maxHitPoints += difficultyRamp;
+            managerCanvas.DisplayEnemyHealth(maxHitPoints);
             gameObject.SetActive(false);
 
         }

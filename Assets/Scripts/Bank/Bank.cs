@@ -12,28 +12,32 @@ public class Bank : MonoBehaviour
     public int CurrentBanlance { get { return currentBanlance; } }
 
     [SerializeField] TextMeshProUGUI displayBalance;
+    ManagerCanvas managerCanvas;
 
     void Awake()
     {
         currentBanlance = startingBalance;
+        managerCanvas = FindObjectOfType<ManagerCanvas>();
         UpdateDisplay();
     }
 
     public void Deposit(int amount)
     {
+        managerCanvas.AddWithdrawGold("+",amount);
         currentBanlance += Mathf.Abs(amount);
         UpdateDisplay();
     }
 
     public void Withdraw(int amount)
     {
+        managerCanvas.AddWithdrawGold("--",amount);
         currentBanlance -= Mathf.Abs(amount);
         UpdateDisplay();
 
         if (currentBanlance < 0)
         {
-            //Lose the game
-            ReloadScene();
+            managerCanvas.GameOver();
+            //ReloadScene();
         }
     }
 
