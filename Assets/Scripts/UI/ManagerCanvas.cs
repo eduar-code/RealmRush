@@ -9,6 +9,8 @@ public class ManagerCanvas : MonoBehaviour
 {
     [SerializeField] GameObject gamePanel;
     [SerializeField] GameObject gameOverPanel;
+    [SerializeField] GameObject pausePanel;
+    [SerializeField] GameObject gameWinPanel;
     [SerializeField] GameObject enemySpawn;
     [SerializeField] GameObject enviroment;
     [SerializeField] GameObject objectGold;
@@ -39,9 +41,9 @@ public class ManagerCanvas : MonoBehaviour
         else if (remainingTime < 0 && countEnemy < enemyEntered)
         {
             remainingTime = 0;
-            // nextLevel
+            WinGame();
         }
-        
+
         int minutes = Mathf.FloorToInt(remainingTime / 60);
         int secods = Mathf.FloorToInt(remainingTime % 60);
         timerText.text = " Time: " + string.Format("{0:00}:{1:00}", minutes, secods);
@@ -54,6 +56,33 @@ public class ManagerCanvas : MonoBehaviour
         gamePanel.SetActive(false);
         gameOverPanel.SetActive(true);
         Time.timeScale = 0;
+    }
+
+    public void WinGame()
+    {
+        soundGame.Stop();
+        enviroment.SetActive(false);
+        gamePanel.SetActive(false);
+        gameWinPanel.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void Pause()
+    {
+        soundGame.Pause();
+        pausePanel.SetActive(!pausePanel.activeSelf);
+        Camera.main.eventMask = 0;
+        Time.timeScale = 0;
+    }
+
+    public void Resume()
+    {
+        Time.timeScale = 1;
+        Camera.main.eventMask = -1;
+        pausePanel.SetActive(!pausePanel.activeSelf);
+        soundGame.Play();
+
+
     }
 
     public void EnemyWhoentered()
@@ -104,6 +133,7 @@ public class ManagerCanvas : MonoBehaviour
 
     public void ExitGame()
     {
+        Time.timeScale = 1;
         StartCoroutine(QuitGame());
     }
 
